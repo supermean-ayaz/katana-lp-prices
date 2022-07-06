@@ -57,7 +57,8 @@ function createProgram(rpcUrl, wallet, programId, idl, confirmOptions) {
 
         //get prices
         const pricePerShares = await program.account.pricePerSharePage.fetch(pricePerShareAddress);
-        console.log('prices:', pricePerShares.prices.map(x => x.toNumber()));
+        const prices = pricePerShares.prices.map(x => x.toNumber());
+        console.log('prices:', prices.length, JSON.stringify(prices));
 
     } catch (error) {
         console.error(error);
