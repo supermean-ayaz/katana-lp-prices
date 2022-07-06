@@ -35,12 +35,16 @@ function createProgram(rpcUrl, wallet, programId, idl, confirmOptions) {
         const program = createProgram(rpcUrl, wallet, STRUCTURED_ID, structuredIdl);
 
         //get state
-        const [_, round] = await findStateAddress(identityContext, STRUCTURED_ID);
-        console.log('round:', round);// round: 254
+        const [stateAddress] = await findStateAddress(identityContext, STRUCTURED_ID);
+        console.log('stateAddress:', stateAddress.toString());
+
+        //get round
+        const state = await program.account.state.fetch(stateAddress);
+        const round = state.round;
 
         //page index
-        const pageIndex = round / new BN(ROUNDS_PER_PAGE).toNumber();
-        console.log('pageIndex:', pageIndex); // pageIndex: 1.984375
+        const pageIndex = new BN(round).div(new BN(ROUNDS_PER_PAGE)).toNumber();
+        console.log('pageIndex:', pageIndex); // pageIndex: 0
 
         //find the address
         const [pricePerShareAddress] = await findPricePerShareAddress(
@@ -53,7 +57,7 @@ function createProgram(rpcUrl, wallet, programId, idl, confirmOptions) {
 
         //get prices
         const pricePerShares = await program.account.pricePerSharePage.fetch(pricePerShareAddress);
-        console.log('prices:', pricePerShares.prices);
+        console.log('prices:', pricePerShares.prices.map(x => x.toNumber()));
 
     } catch (error) {
         console.error(error);
