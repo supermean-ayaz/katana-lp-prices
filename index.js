@@ -1,7 +1,7 @@
 const { BN, Program, AnchorProvider } = require('@project-serum/anchor');
 const { clusterApiUrl, Keypair, Connection } = require('@solana/web3.js');
 const { BasicIdentityContext, structuredIdl } = require('@katana-hq/sdk');
-const { findPricePerShareAddress } = require('@katana-hq/sdk/dist/pda');
+const { findPricePerShareAddress, findStateAddress } = require('@katana-hq/sdk/dist/pda');
 const { ROUNDS_PER_PAGE, TOKENS, STRUCTURED_ID } = require('@katana-hq/sdk/dist/utils/constants');
 
 function createReadonlyWallet(pubKey) {
@@ -34,10 +34,18 @@ function createProgram(rpcUrl, wallet, programId, idl, confirmOptions) {
         const identityContext = new BasicIdentityContext(TOKENS.SOL);
         const program = createProgram(rpcUrl, wallet, STRUCTURED_ID, structuredIdl);
 
+        //get state
+        const [_, round] = await findStateAddress(identityContext, STRUCTURED_ID);
+        console.log('round:', round);// round: 254
+
+        //page index
+        const pageIndex = round / new BN(ROUNDS_PER_PAGE).toNumber();
+        console.log('pageIndex:', pageIndex); // pageIndex: 1.984375
+
         //find the address
         const [pricePerShareAddress] = await findPricePerShareAddress(
             identityContext,
-            new BN(ROUNDS_PER_PAGE).toNumber(),
+            pageIndex,
             program.programId
         );
 
@@ -46,7 +54,7 @@ function createProgram(rpcUrl, wallet, programId, idl, confirmOptions) {
         //get prices
         const pricePerShares = await program.account.pricePerSharePage.fetch(pricePerShareAddress);
         console.log('prices:', pricePerShares.prices);
-        
+
     } catch (error) {
         console.error(error);
     }
