@@ -1,5 +1,5 @@
 const { BN, Program, AnchorProvider } = require('@project-serum/anchor');
-const { clusterApiUrl, Keypair, Connection } = require('@solana/web3.js');
+const { clusterApiUrl, Keypair, Connection, LAMPORTS_PER_SOL } = require('@solana/web3.js');
 const { BasicIdentityContext, structuredIdl } = require('@katana-hq/sdk');
 const { findPricePerShareAddress, findStateAddress } = require('@katana-hq/sdk/dist/pda');
 const { ROUNDS_PER_PAGE, TOKENS, STRUCTURED_ID } = require('@katana-hq/sdk/dist/utils/constants');
@@ -40,7 +40,7 @@ function createProgram(rpcUrl, wallet, programId, idl, confirmOptions) {
 
         //get round
         const state = await program.account.state.fetch(stateAddress);
-        const round = state.round;
+        const { round, decimals, underlyingTokenMint, derivativeTokenMint, quoteTokenMint } = state;
 
         //page index
         const pageIndex = new BN(round).div(new BN(ROUNDS_PER_PAGE)).toNumber();
@@ -57,8 +57,16 @@ function createProgram(rpcUrl, wallet, programId, idl, confirmOptions) {
 
         //get prices
         const pricePerShares = await program.account.pricePerSharePage.fetch(pricePerShareAddress);
+        console.log('page:', pricePerShares.page.toNumber());
+
         const prices = pricePerShares.prices.map(x => x.toNumber());
-        console.log('prices:', prices.length, JSON.stringify(prices));
+        const currentPrice = prices[round - 1];
+        const currentPriceNormalized = currentPrice / Math.pow(10, decimals)
+        console.log('current price:', currentPriceNormalized, 'SOL');
+
+        console.log('underlyingTokenMint:', underlyingTokenMint.toString());
+        console.log('derivativeTokenMint (LP):', derivativeTokenMint.toString());
+        console.log('quoteTokenMint:', quoteTokenMint.toString());
 
     } catch (error) {
         console.error(error);
