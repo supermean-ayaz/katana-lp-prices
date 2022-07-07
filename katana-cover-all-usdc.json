@@ -2,7 +2,7 @@
     {
         "symbol": "kcSOL",
         "address": "J58rNqBQTQQJ7oMftec8bLWKVF6iujcH3Ck81f2a4zCu",
-        "price": 43.681698
+        "price": 43.795581
     },
     {
         "symbol": "kcBTC",
@@ -12,52 +12,37 @@
     {
         "symbol": "kcETH",
         "address": "56ZMDv7VWEhEx2Q1YgH3RNEMnwNqTPPA8rk9KLi6CjX6",
-        "price": 1352.577441
+        "price": 1360.885656
     },
     {
         "symbol": "kcSRM",
         "address": "FkTXB81tVJdcLnsnc72HeXGJq6NXaK2puqbFzd5WS6UU",
-        "price": 0.692762
+        "price": 0.694707
     },
     {
         "symbol": "kcFTT",
         "address": "CERhXTjfPT8AbERv7arCp6LnKr7jacvU82tDdkWQzzWo",
-        "price": 30.555643
+        "price": 30.631918
     },
     {
         "symbol": "kcRAY",
         "address": "2wRAEfYsBVfiirgWX7qGkbwnXvKvd8u1kd4D59QM4F8j",
-        "price": 0.781562
-    },
-    {
-        "symbol": "kcSOL",
-        "address": "J58rNqBQTQQJ7oMftec8bLWKVF6iujcH3Ck81f2a4zCu",
-        "price": 43.681698
-    },
-    {
-        "symbol": "kcSOL",
-        "address": "J58rNqBQTQQJ7oMftec8bLWKVF6iujcH3Ck81f2a4zCu",
-        "price": 43.681698
-    },
-    {
-        "symbol": "kcSRM",
-        "address": "FkTXB81tVJdcLnsnc72HeXGJq6NXaK2puqbFzd5WS6UU",
-        "price": 0.692838
+        "price": 0.781395
     },
     {
         "symbol": "kcMSOL",
         "address": "E2eevzN2TBWAL1LiALAfEYFLRBzSDLugLjiNuZg9ehwT",
-        "price": 43.513936
+        "price": 43.62945
     },
     {
         "symbol": "kcMNGO",
         "address": "JD7y57PY86Fz1JL2rtk1c8jGGsFtkiSU9yDTuy4k2gpU",
-        "price": 0.054713
+        "price": 0.054838
     },
     {
         "symbol": "kcSTSOL",
         "address": "Br4WZq7N5gFK3WX8Ls1U15ePnQ1DnSKwx5k62X51LeLB",
-        "price": 40.37733
+        "price": 40.580944
     },
     {
         "symbol": "kcWLUNA",

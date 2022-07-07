@@ -59,39 +59,42 @@ class KatanaPrices {
                 const tokenProvider = new TokenListProvider();
                 tokenProvider.resolve().then((tokens) => {
                     const list = tokens.getList();
-                    const katanaLPs = tokens.filterByTag('Katana').getList().filter(x => x.symbol.startsWith('kc')).map(x => {
-                        return {
-                            symbol: x.symbol,
-                            address: x.address
-                        }
-                    });
                     const tokenList = list.filter(x => tokenAddresses.includes(x.address)).map(x => {
                         return {
                             symbol: x.symbol,
                             address: x.address
                         }
                     });
-                    resolve([tokenList, katanaLPs]);
+                    const katanaLPs = tokens.filterByTag('Katana').getList().filter(x => x.symbol.startsWith('kc')).map(x => {
+                        return {
+                            symbol: x.symbol,
+                            address: x.address
+                        }
+                    });
+                    resolve([[...new Set(tokenList)], [...new Set(katanaLPs)]]); //Return unique results
                 });
             });
 
             const priceList = [];
             for (let i = 0; i < tokensInfo.length; i++) {
                 const token = tokensInfo[i];
-
+                if (priceList.findIndex(x => x.mint === token.address) >= 0) {
+                    //repeated result
+                    continue;
+                }
                 console.log(`Getting info for ${token.symbol}: ${token.address.toString()}`);
 
                 try {
                     const priceInfo = await this.getPriceByUnderlingMint(token.address);
-                    const lpInfo = lpTokens.filter(x => x.address === priceInfo.lpMint);
-                    if (lpInfo.length > 0) {
-                        const priceUsd = {
-                            ...lpInfo[0],
+                    const lpInfo = lpTokens.find(x => x.address === priceInfo.lpMint);
+                    if (lpInfo) {
+                        const tokenPrice = {
+                            ...lpInfo,
                             price: priceInfo.price,
                             mint: token.address.toString()
                         };
 
-                        priceList.push(priceUsd);
+                        priceList.push(tokenPrice);
                     }
                     else {
                         console.warn("LP token didn't match for ", token);
