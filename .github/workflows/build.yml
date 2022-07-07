@@ -2,7 +2,7 @@ name: Build
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "*/15 * * * *"
 
 jobs:
   build:
@@ -15,5 +15,16 @@ jobs:
       with:
         node-version: 16
         cache: 'npm'
-    - run: npm i
-    - run: node index.js
+        
+    - name: Install
+      run: npm i
+      
+    - name: Build
+      run: node index.js
+      
+    - name: Update Katana files
+      uses: test-room-7/action-update-file@v1
+      with:
+          file-path: katana-*.json
+          commit-msg: Update prices
+          github-token: ${{ secrets.GITHUB_TOKEN }}
