@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { clusterApiUrl, Keypair } = require('@solana/web3.js');
 const KatanaPrices = require('./src/katana.prices');
-const { getPrice, sleep } = require('./src/utils');
+const { getPrice } = require('./src/utils');
 
 (async () => {
     try {
