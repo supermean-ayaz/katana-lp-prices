@@ -23,7 +23,7 @@ const { getPrice, sleep } = require('./src/utils');
                 console.log(`Getting USDC price for ${item.symbol}: ${item.address}`);
                 const mintPriceInfo = await getPrice(item.mint);
                 if (mintPriceInfo && mintPriceInfo.price) {
-                    item.price = Number((item.price * mintPriceInfo.price).toFixed(9));
+                    item.price = Number((item.price * mintPriceInfo.price).toFixed(6));
                     delete item.mint;
                     pricesUsdc.push(item);
                 }
