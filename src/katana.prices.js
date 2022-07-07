@@ -51,16 +51,27 @@ class KatanaPrices {
         }
     }
 
-    async getAllCallPriceList() {
+    async getCoveredCallPriceList(withDelay = false) {
         try {
             //get tokenlist
             const tokenAddresses = Object.values(TOKENS).map(x => x.toString());
             let [tokensInfo, lpTokens] = await new Promise((resolve) => {
-                new TokenListProvider().resolve().then((tokens) => {
+                const tokenProvider = new TokenListProvider();
+                tokenProvider.resolve().then((tokens) => {
                     const list = tokens.getList();
-                    const result = list.filter(x => tokenAddresses.includes(x.address));
-                    const kataLPs = tokens.filterByTag('Katana').getList();
-                    resolve([result, kataLPs]);
+                    const katanaLPs = tokens.filterByTag('Katana').getList().filter(x => x.symbol.startsWith('kc')).map(x => {
+                        return {
+                            symbol: x.symbol,
+                            address: x.address
+                        }
+                    });
+                    const tokenList = list.filter(x => tokenAddresses.includes(x.address)).map(x => {
+                        return {
+                            symbol: x.symbol,
+                            address: x.address
+                        }
+                    });
+                    resolve([tokenList, katanaLPs]);
                 });
             });
 
@@ -68,19 +79,28 @@ class KatanaPrices {
             for (let i = 0; i < tokensInfo.length; i++) {
                 const token = tokensInfo[i];
 
-                console.log(`Getting price for ${token.symbol}: ${token.address.toString()}`);
+                console.log(`Getting info for ${token.symbol}: ${token.address.toString()}`);
 
                 try {
-                    let price = await this.getPriceByUnderlingMint(token.address);
-                    const lpInfo = lpTokens.filter(x => x.address === price.lpMint);
-                    price = { ...price, mintSymbol: token.symbol, lpSymbol: lpInfo.length > 0 ? lpInfo[0].symbol : undefined }; //add symbols
+                    const priceInfo = await this.getPriceByUnderlingMint(token.address);
+                    const lpInfo = lpTokens.filter(x => x.address === priceInfo.lpMint);
+                    if (lpInfo.length > 0) {
+                        const priceUsd = {
+                            ...lpInfo[0],
+                            price: priceInfo.price,
+                            mint: token.address.toString()
+                        };
 
-                    priceList.push(price);
+                        priceList.push(priceUsd);
+                    }
+                    else {
+                        console.warn("LP token didn't match for ", token);
+                    }
                 } catch (error) {
                     console.error(error);
                 }
 
-                await sleep(1);
+                if (withDelay) await sleep(0.3);
             }
             return priceList;
         } catch (error) {

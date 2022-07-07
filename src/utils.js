@@ -1,3 +1,4 @@
+const { fetch } = require('cross-fetch');
 const { Keypair, Connection } = require('@solana/web3.js');
 const { Program, AnchorProvider } = require('@project-serum/anchor');
 
@@ -9,7 +10,6 @@ const createReadonlyWallet = (pubKey) => {
         payer: Keypair.generate(), // dummy unused payer
     };
 }
-exports.createReadonlyWallet = createReadonlyWallet;
 
 const createAnchorProvider = (rpcUrl, wallet, opts) => {
     opts = opts ?? AnchorProvider.defaultOptions();
@@ -17,17 +17,32 @@ const createAnchorProvider = (rpcUrl, wallet, opts) => {
     const provider = new AnchorProvider(connection, wallet, opts);
     return provider;
 }
-exports.createAnchorProvider = createAnchorProvider;
 
 const createProgram = (rpcUrl, wallet, programId, idl, confirmOptions) => {
     const provider = createAnchorProvider(rpcUrl, wallet, confirmOptions);
     const program = new Program(idl, programId, provider);
     return program;
 };
-exports.createProgram = createProgram;
 
 const sleep = (seconds, log = true) => {
     if (log) { console.log(`Sleeping for ${seconds} seconds`); }
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
+
+const getPriceFromJup = async (tokenAddress) => {
+    const res = await fetch(`https://price.jup.ag/v1/price?id=${tokenAddress}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            "User-Agent": "KatanaPricingAgent/1.0.0"
+        }
+    });
+    const result = await res.json();
+
+    return result.data;
+};
+
+exports.createReadonlyWallet = createReadonlyWallet;
+exports.createProgram = createProgram;
+exports.getPrice = getPriceFromJup;
 exports.sleep = sleep;
