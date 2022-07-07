@@ -1,6 +1,6 @@
 const { BN } = require('@project-serum/anchor');
 const { TokenListProvider } = require('@solana/spl-token-registry')
-const { clusterApiUrl, Keypair } = require('@solana/web3.js');
+const { clusterApiUrl, Keypair, PublicKey } = require('@solana/web3.js');
 const { BasicIdentityContext, structuredIdl } = require('@katana-hq/sdk');
 const { findPricePerShareAddress, findStateAddress } = require('@katana-hq/sdk/dist/pda');
 const { ROUNDS_PER_PAGE, TOKENS, STRUCTURED_ID } = require('@katana-hq/sdk/dist/utils/constants');
@@ -12,14 +12,11 @@ class KatanaPrices {
         this.rpcUrl = rpcUrl || clusterApiUrl("mainnet-beta");
         this.wallet = createReadonlyWallet(walletAddress || Keypair.generate().publicKey);
         this.program = createProgram(this.rpcUrl, this.wallet, STRUCTURED_ID, structuredIdl);
-
-        //get tokenlist
-        new TokenListProvider().resolve().then(list => this.tokenListProvider = list);
     }
 
     async getPriceByUnderlingMint(underlyingMintAddress) {
         try {
-            const identityContext = new BasicIdentityContext(underlyingMintAddress);
+            const identityContext = new BasicIdentityContext(new PublicKey(underlyingMintAddress));
 
             //get state
             const [stateAddress] = await findStateAddress(identityContext, STRUCTURED_ID);
@@ -46,9 +43,7 @@ class KatanaPrices {
                 price: currentPrice,
                 round: round.toNumber(),
                 mint: underlyingTokenMint.toString(),
-                mintSymbol: '',
                 lpMint: derivativeTokenMint.toString(),
-                lpSymbol: ''
                 //currency: quoteTokenMint.toString()
             };
         } catch (error) {
@@ -58,24 +53,36 @@ class KatanaPrices {
 
     async getAllCallPriceList() {
         try {
-            const list = [];
-            const tokenList = Object.keys(TOKENS);
-            for (let i = 0; i < tokenList.length; i++) {
-                const symbol = tokenList[i];
-                const address = TOKENS[symbol];
+            //get tokenlist
+            const tokenAddresses = Object.values(TOKENS).map(x => x.toString());
+            let [tokensInfo, lpTokens] = await new Promise((resolve) => {
+                new TokenListProvider().resolve().then((tokens) => {
+                    const list = tokens.getList();
+                    const result = list.filter(x => tokenAddresses.includes(x.address));
+                    const kataLPs = tokens.filterByTag('Katana').getList();
+                    resolve([result, kataLPs]);
+                });
+            });
 
-                console.log(`Getting price for kc${symbol}: ${address.toString()}`);
+            const priceList = [];
+            for (let i = 0; i < tokensInfo.length; i++) {
+                const token = tokensInfo[i];
+
+                console.log(`Getting price for ${token.symbol}: ${token.address.toString()}`);
 
                 try {
-                    const price = await this.getPriceByUnderlingMint(address);
-                    list.push(price);
+                    let price = await this.getPriceByUnderlingMint(token.address);
+                    const lpInfo = lpTokens.filter(x => x.address === price.lpMint);
+                    price = { ...price, mintSymbol: token.symbol, lpSymbol: lpInfo.length > 0 ? lpInfo[0].symbol : undefined }; //add symbols
+
+                    priceList.push(price);
                 } catch (error) {
                     console.error(error);
                 }
 
                 await sleep(1);
             }
-            return list;
+            return priceList;
         } catch (error) {
             throw error;
         }
