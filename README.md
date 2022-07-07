@@ -1,7 +1,9 @@
-# katana-test
+# Katana LP Token Prices
+
+[![Katana](https://github.com/supermean-ayaz/katana-lp-prices/actions/workflows/katana.yml/badge.svg)](https://github.com/supermean-ayaz/katana-lp-prices/actions/workflows/katana.yml)
 
 ## install packages
 `yarn install`
 
 ## run
-`node index.js`
+`yarn start`
