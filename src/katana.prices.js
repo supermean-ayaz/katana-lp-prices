@@ -46,8 +46,9 @@ class KatanaPrices {
                 price: currentPrice,
                 round: round.toNumber(),
                 mint: underlyingTokenMint.toString(),
-                mintSymbol:
-                    lpMint: derivativeTokenMint.toString(),
+                mintSymbol: '',
+                lpMint: derivativeTokenMint.toString(),
+                lpSymbol: ''
                 //currency: quoteTokenMint.toString()
             };
         } catch (error) {
