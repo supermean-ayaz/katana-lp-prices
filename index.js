@@ -35,10 +35,10 @@ const { getPrice, sleep } = require('./src/utils');
         console.timeEnd("getCoveredCallPrice");
 
         //Save result with native token prices (e.g. kcSOL prices in SOL)
-        fs.writeFileSync('./katana-cover-all.json', JSON.stringify(list), { encoding: 'utf8' });
+        fs.writeFileSync('./katana-cover-all.json', JSON.stringify(list, null, 4), { encoding: 'utf8' });
 
         //Save result with USDC prices (e.g. kcSOL prices in USDC)
-        fs.writeFileSync('./katana-cover-all-usdc.json', JSON.stringify(pricesUsdc), { encoding: 'utf8' });
+        fs.writeFileSync('./katana-cover-all-usdc.json', JSON.stringify(pricesUsdc, null, 4), { encoding: 'utf8' });
     } catch (error) {
         console.error(error);
     }
