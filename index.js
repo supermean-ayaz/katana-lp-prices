@@ -1,14 +1,16 @@
 const fs = require('fs');
 const { clusterApiUrl, Keypair } = require('@solana/web3.js');
+const AllBridgePrices = require('./src/allbridge.price');
 const KatanaPrices = require('./src/katana.prices');
 const { getPrice } = require('./src/utils');
 
 (async () => {
-    const fileName = "katana-cover-all";
     const fileEncoding = { encoding: 'utf8' };
     const formatJsonOutput = process.env.FORMAT_JSON || false;
+
     try {
         console.time("getCoveredCallPrice");
+        const fileName = "katana-cover-all";
         const rpcUrl = process.env.RPC_URL || clusterApiUrl('mainnet-beta');
 
         const katana = new KatanaPrices(rpcUrl, Keypair.generate().publicKey)
@@ -45,6 +47,25 @@ const { getPrice } = require('./src/utils');
 
         console.timeEnd("getCoveredCallPrice");
     } catch (error) {
-        console.error(error);
+        console.error('Katana:ERROR:', error);
     }
+
+    try {
+        console.time("all-bridge");
+        //All Bridge LP
+        console.log("Getting All Bridge tokens");
+        const allBridgeChainCode = "SOL";
+
+        const allBridge = new AllBridgePrices();
+        const result = await allBridge.getPriceList(allBridgeChainCode);
+
+        //Save result with USDC prices (e.g. xABR prices in USDC)
+        const xABRPrice = formatJsonOutput ? JSON.stringify(result, null, 4) : JSON.stringify(result);
+        fs.writeFileSync(`./all-bridge-usdc.json`, xABRPrice, fileEncoding);
+
+        console.timeEnd("all-bridge");
+    } catch (error) {
+        console.error('AllBridge:ERROR:', error);
+    }
+
 })();

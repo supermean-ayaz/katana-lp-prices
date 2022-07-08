@@ -42,7 +42,15 @@ const getPriceFromJup = async (tokenAddress) => {
     return result.data;
 };
 
+const normalizeTokenAmount = (raw, decimals) => {
+    let rawTokens;
+    if (typeof raw === "string") rawTokens = parseInt(raw);
+    else rawTokens = raw;
+    return rawTokens / Math.pow(10, decimals);
+}
+
 exports.createReadonlyWallet = createReadonlyWallet;
+exports.normalizeAmount = normalizeTokenAmount;
 exports.createProgram = createProgram;
 exports.getPrice = getPriceFromJup;
 exports.sleep = sleep;
