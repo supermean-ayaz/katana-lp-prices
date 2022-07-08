@@ -1,9 +1,9 @@
 name: Katana
 
 on:
-  workflow_dispatch:
   schedule:
     - cron: "7,18,29,41,56 * * * *"
+  workflow_dispatch:
 
 jobs:
   build:
