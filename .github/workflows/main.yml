@@ -16,5 +16,5 @@ jobs:
 
       - name: Run a multi-line script
         run: |
-          echo Add other actions to build ${{ GITHUB_RUN_NUMBER }},
-          echo test, and deploy your project ${{ env.GITHUB_RUN_NUMBER }}.
+          echo "Add other actions to build ${{ env.GITHUB_RUN_NUMBER }}",
+          echo "test, and deploy your project".
