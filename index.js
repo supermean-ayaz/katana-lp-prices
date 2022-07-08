@@ -61,7 +61,7 @@ const { getPrice } = require('./src/utils');
 
         //Save result with USDC prices (e.g. xABR prices in USDC)
         const xABRPrice = formatJsonOutput ? JSON.stringify(result, null, 4) : JSON.stringify(result);
-        fs.writeFileSync(`./all-bridge-usdc.json`, xABRPrice, fileEncoding);
+        fs.writeFileSync(`./allbridge-usdc.json`, xABRPrice, fileEncoding);
 
         console.timeEnd("all-bridge");
     } catch (error) {

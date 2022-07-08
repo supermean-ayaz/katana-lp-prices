@@ -15,7 +15,8 @@ class AllBridgePrices {
             const res = await fetch(`https://allbridgeapi.net/staking-pool-info`, {
                 method: "GET",
                 headers: {
-                    "Accept": "application/json"
+                    "Accept": "application/json",
+                    "User-Agent": "ABRPricingAgent/1.0.0"
                 }
             });
             const data = await res.json();
