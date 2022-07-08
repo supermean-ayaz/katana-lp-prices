@@ -2,8 +2,7 @@ name: Katana
 
 on:
   schedule:
-    - cron: "7,18,29,41,56 * * * *"
-  workflow_dispatch:
+    - cron: "*/7 * * * *"
 
 jobs:
   build:
