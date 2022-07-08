@@ -1,6 +1,7 @@
 name: Katana
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "*/15 * * * *"
 
@@ -11,7 +12,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
         cache: 'npm'
     
     - name: Cache packages  
@@ -29,8 +30,6 @@ jobs:
     - name: Update Katana files
       uses: test-room-7/action-update-file@v1
       with:
-          file-path: |
-            katana-*.json
-            allbridge-*.json
+          file-path: *-usdc.json
           commit-msg: "Update prices ${{ env.GITHUB_RUN_NUMBER }}"
           github-token: ${{ secrets.GITHUB_TOKEN }}
