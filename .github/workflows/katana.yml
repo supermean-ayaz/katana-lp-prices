@@ -30,6 +30,6 @@ jobs:
     - name: Update Katana files
       uses: test-room-7/action-update-file@v1
       with:
-          file-path: *-usdc.json
+          file-path: '*-usdc.json'
           commit-msg: "Update prices ${{ env.GITHUB_RUN_NUMBER }}"
           github-token: ${{ secrets.GITHUB_TOKEN }}
