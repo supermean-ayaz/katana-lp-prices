@@ -16,7 +16,7 @@ class AllBridgePrices {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
-                    "User-Agent": "ABRPricingAgent/1.0.0"
+                    "User-Agent": "Mozilla/5.0"
                 }
             });
             const data = await res.json();
@@ -27,7 +27,7 @@ class AllBridgePrices {
                 price: Number((stakeInfo.totalStake / stakeInfo.totalSupply * stakeInfo.baseTokenInfo.price).toFixed(6))
             }
 
-            return result;
+            return [result];
         } catch (error) {
             throw error;
         }
