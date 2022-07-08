@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run a one-line script
-        run: echo Hello, world! $GITHUB_RUN_NUMBER
+        run: echo 'Hello, world! $GITHUB_RUN_NUMBER'
 
       - name: Run a multi-line script
         run: |
-          echo "Add other actions to build ${{ env.GITHUB_RUN_NUMBER }}",
+          echo "Add other actions to build $GITHUB_RUN_NUMBER",
           echo "test, and deploy your project".
