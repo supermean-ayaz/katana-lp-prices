@@ -42,6 +42,30 @@ const getPriceFromJup = async (tokenAddress) => {
     return result.data;
 };
 
+/**
+ * 
+ * @param {object} ids {'id':'address','id2':'symbol2'}
+ * @returns 
+ */
+const getPricesFromCoingecko = async (ids = {}) => {
+    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${Object.keys(ids).join(',')}&vs_currencies=usd`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            "User-Agent": "PriceAgent/1.0.0"
+        }
+    });
+    const data = await res.json();
+    const list = Object.keys(data).map(x => {
+        return {
+            id: ids[x],
+            price: data[x].usd
+        }
+    });
+    //retun as dictionary
+    return Object.assign({}, ...list.map((x) => ({ [x.id]: x.price })));
+};
+
 const normalizeTokenAmount = (raw, decimals) => {
     let rawTokens;
     if (typeof raw === "string") rawTokens = parseInt(raw);
@@ -51,6 +75,7 @@ const normalizeTokenAmount = (raw, decimals) => {
 
 exports.createReadonlyWallet = createReadonlyWallet;
 exports.normalizeAmount = normalizeTokenAmount;
+exports.getPrices = getPricesFromCoingecko;
 exports.createProgram = createProgram;
 exports.getPrice = getPriceFromJup;
 exports.sleep = sleep;

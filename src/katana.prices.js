@@ -62,7 +62,8 @@ class KatanaPrices {
                     const tokenList = list.filter(x => tokenAddresses.includes(x.address)).map(x => {
                         return {
                             symbol: x.symbol,
-                            address: x.address
+                            address: x.address,
+                            coingecko: x.extensions?.coingeckoId
                         }
                     });
                     const katanaLPs = tokens.filterByTag('Katana').getList().filter(x => x.symbol.startsWith('kc')).map(x => {
@@ -91,7 +92,8 @@ class KatanaPrices {
                         const tokenPrice = {
                             ...lpInfo,
                             price: priceInfo.price,
-                            mint: token.address.toString()
+                            mint: token.address.toString(),
+                            coingecko: token.coingecko
                         };
 
                         priceList.push(tokenPrice);

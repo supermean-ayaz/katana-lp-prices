@@ -12,4 +12,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run a one-line script
-        run: echo Hello, world! $GITHUB_RUN_NUMBER
+        run: echo ${{ env }}

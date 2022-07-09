@@ -2,7 +2,7 @@ const fs = require('fs');
 const { clusterApiUrl, Keypair } = require('@solana/web3.js');
 const AllBridgePrices = require('./src/allbridge.price');
 const KatanaPrices = require('./src/katana.prices');
-const { getPrice } = require('./src/utils');
+const { getPrice, getPrices } = require('./src/utils');
 
 (async () => {
     const fileEncoding = { encoding: 'utf8' };
@@ -21,16 +21,28 @@ const { getPrice } = require('./src/utils');
         const nativePrices = formatJsonOutput ? JSON.stringify(list, null, 4) : JSON.stringify(list);
         fs.writeFileSync(`./${fileName}.json`, nativePrices, fileEncoding);
 
+        //Get prices from coingecko
+        const coingeckoIds = Object.assign({}, ...list.map((x) => ({ [x.coingecko]: x.mint })));
+        const coingeckoPrices = await getPrices(coingeckoIds);
+
         //Get prices as USDC
         const pricesUsdc = [];
         for (let i = 0; i < list.length; i++) {
             const item = list[i];
             try {
-                console.log(`Getting USDC price for ${item.symbol}: ${item.address}`);
-                const mintPriceInfo = await getPrice(item.mint);
-                if (mintPriceInfo && mintPriceInfo.price) {
-                    item.price = Number((item.price * mintPriceInfo.price).toFixed(6));
+                let mintPrice = coingeckoPrices[item.mint];
+                if (mintPrice === undefined) {
+                    console.log(`Getting USDC price for ${item.symbol}: ${item.address}`);
+                    const mintPriceInfo = await getPrice(item.mint);
+                    if (mintPriceInfo?.price) {
+                        mintPrice = mintPriceInfo.price;
+                    }
+                }
+
+                if (mintPrice) {
+                    item.price = Number((item.price * mintPrice).toFixed(6));
                     delete item.mint;
+                    delete item.coingecko;
                     pricesUsdc.push(item);
                 }
                 else {
