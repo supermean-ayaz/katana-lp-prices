@@ -1,7 +1,8 @@
 const fs = require('fs');
 const { clusterApiUrl, Keypair } = require('@solana/web3.js');
-const AllBridgePrices = require('./src/allbridge.price');
+const AllBridgePrices = require('./src/allbridge.prices');
 const KatanaPrices = require('./src/katana.prices');
+const CTokenPrices = require('./src/ctoken.prices');
 const { getPrice, getPrices } = require('./src/utils');
 
 (async () => {
@@ -78,6 +79,22 @@ const { getPrice, getPrices } = require('./src/utils');
         console.timeEnd("all-bridge");
     } catch (error) {
         console.error('AllBridge:ERROR:', error);
+    }
+
+    try {
+        console.time("ctoken");
+        //All Bridge LP
+        console.log("Getting cTokens");
+
+        const cTokens = new CTokenPrices();        
+        const result = await cTokens.getPriceList();
+
+        // const cTokenPrices = formatJsonOutput ? JSON.stringify(result, null, 4) : JSON.stringify(result);
+        // fs.writeFileSync(`./ctokens-usdc.json`, cTokenPrices, fileEncoding);
+
+        console.timeEnd("ctoken");
+    } catch (error) {
+
     }
 
 })();
