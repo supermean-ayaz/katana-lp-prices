@@ -3,6 +3,7 @@ name: Katana
 on:
   schedule:
     - cron: "*/7 * * * *"
+  workflow_dispatch:
 
 jobs:
   build:
