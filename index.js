@@ -89,12 +89,12 @@ const { getPrice, getPrices } = require('./src/utils');
         const cTokens = new CTokenPrices();        
         const result = await cTokens.getPriceList();
 
-        // const cTokenPrices = formatJsonOutput ? JSON.stringify(result, null, 4) : JSON.stringify(result);
-        // fs.writeFileSync(`./ctokens-usdc.json`, cTokenPrices, fileEncoding);
+        const cTokenPrices = formatJsonOutput ? JSON.stringify(result, null, 4) : JSON.stringify(result);
+        fs.writeFileSync(`./ctokens-usdc.json`, cTokenPrices, fileEncoding);
 
         console.timeEnd("ctoken");
     } catch (error) {
-
+        console.error('cTokens:ERROR:', error);
     }
 
 })();

@@ -148,21 +148,20 @@ class CTokenPrices {
             const decimals18 = Math.pow(10, this.cTokenDecimals);
             for (let i = 0; i < data.results.length; i++) {
                 const { reserve: { liquidity, collateral } } = data.results[i];
-                const tokenInfo = this.tokensInfo.find(x => x.address == collateral.mintPubkey);
                 //price=(availableAmount*10**18 + borrowedAmountWads)/(mintTotalSupply*10**18)
                 const price = ((Number(liquidity.availableAmount) * decimals18) + Number(liquidity.borrowedAmountWads)) / (Number(collateral.mintTotalSupply) * decimals18);
+
+                const tokenInfo = this.tokensInfo.find(x => x.address == collateral.mintPubkey);
                 if (tokenInfo) {
                     tokenInfo.price = price;
+                } else {
+                    console.log(`No tokeinfo for ${collateral.mintPubkey}`);
                 }
-                console.log('price:', price, 'tokenInfo:', JSON.stringify(tokenInfo));
             }
 
-            const result = {
-                ...this.tokenInfo,
-                price: Number((stakeInfo.totalStake / stakeInfo.totalSupply * stakeInfo.baseTokenInfo.price).toFixed(6))
-            }
+            const result = this.tokensInfo.filter(x => x.reserve.length > 0).forEach(x => delete x.reserve);
 
-            return [result];
+            return result;
         } catch (error) {
             throw error;
         }
