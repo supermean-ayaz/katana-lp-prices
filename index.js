@@ -8,7 +8,7 @@ const { getPrice, getPrices } = require('./src/utils');
 (async () => {
     const fileEncoding = { encoding: 'utf8' };
     const formatJsonOutput = process.env.FORMAT_JSON || false;
-    /*
+
     try {
         console.time("getCoveredCallPrice");
         const fileName = "katana-cover-all";
@@ -80,7 +80,7 @@ const { getPrice, getPrices } = require('./src/utils');
     } catch (error) {
         console.error('AllBridge:ERROR:', error);
     }
-*/
+
     try {
         console.time("ctoken");
         //All Bridge LP
