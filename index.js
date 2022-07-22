@@ -8,7 +8,7 @@ const { getPrice, getPrices } = require('./src/utils');
 (async () => {
     const fileEncoding = { encoding: 'utf8' };
     const formatJsonOutput = process.env.FORMAT_JSON || false;
-
+    
     try {
         console.time("getCoveredCallPrice");
         const fileName = "katana-cover-all";
@@ -86,11 +86,24 @@ const { getPrice, getPrices } = require('./src/utils');
         //All Bridge LP
         console.log("Getting cTokens");
 
-        const cTokens = new CTokenPrices();        
-        const result = await cTokens.getPriceList();
+        const cTokens = new CTokenPrices();
+        const cTokenResult = await cTokens.getPriceList();
 
-        const cTokenPrices = formatJsonOutput ? JSON.stringify(result, null, 4) : JSON.stringify(result);
-        fs.writeFileSync(`./ctokens-usdc.json`, cTokenPrices, fileEncoding);
+        //Get prices from coingecko
+        const coingeckoIds = Object.assign({}, ...cTokenResult.filter(x => x.coingecko && x.coingecko.length > 0).map((x) => ({ [x.coingecko]: x.address })));
+        const coingeckoPrices = await getPrices(coingeckoIds);
+        cTokenResult.forEach(item => {
+            const mintPrice = coingeckoPrices[item.address];
+            if (mintPrice) {
+                item.price = Number((item.price * mintPrice).toFixed(6));
+            } else {
+                item.price = 0;
+            }
+            item.coingecko = undefined;
+        });
+
+        const cTokensJson = formatJsonOutput ? JSON.stringify(cTokenResult, null, 4) : JSON.stringify(cTokenResult);
+        fs.writeFileSync(`./ctokens-usdc.json`, cTokensJson, fileEncoding);
 
         console.timeEnd("ctoken");
     } catch (error) {
