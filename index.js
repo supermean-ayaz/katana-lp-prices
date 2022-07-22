@@ -101,8 +101,7 @@ const { getPrice, getPrices } = require('./src/utils');
                 mintPrice = coingeckoPrices['cFTT'];
             }
             if (!mintPrice && item.symbol === 'cmSOL') {
-                const mintPriceInfo = await getPrice('mSOL');
-                console.log(mintPriceInfo);
+                const mintPriceInfo = await getPrice('mSOL');                
                 if (mintPriceInfo?.price) {
                     mintPrice = Number(mintPriceInfo.price);
                 }
