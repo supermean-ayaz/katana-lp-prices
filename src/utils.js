@@ -58,7 +58,7 @@ const getPricesFromCoingecko = async (ids = {}) => {
         }
     });
     const data = await res.json();
-    console.log(data);
+    
     const list = Object.keys(data).map(x => {
         return {
             id: String(ids[x]),

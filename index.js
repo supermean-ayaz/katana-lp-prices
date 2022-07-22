@@ -91,9 +91,8 @@ const { getPrice, getPrices } = require('./src/utils');
 
         //Get prices from coingecko
         const coingeckoIds = Object.assign({}, ...cTokenResult.filter(x => x.coingecko).map((x) => ({ [x.coingecko]: x.symbol })));
-        console.log(coingeckoIds);
         const coingeckoPrices = await getPrices(coingeckoIds);
-        console.log(coingeckoPrices);
+
         cTokenResult.forEach(async (item) => {
             let mintPrice = coingeckoPrices[item.symbol];
             if (!mintPrice && item.symbol === 'csoFTT') {
