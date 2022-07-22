@@ -93,25 +93,28 @@ const { getPrice, getPrices } = require('./src/utils');
         const coingeckoIds = Object.assign({}, ...cTokenResult.filter(x => x.coingecko).map((x) => ({ [x.coingecko]: x.symbol })));
         const coingeckoPrices = await getPrices(coingeckoIds);
 
-        cTokenResult.forEach(async (item) => {
+        for (let i = 0; i < cTokenResult.length; i++) {
+            const item = cTokenResult[i];
+
             let mintPrice = coingeckoPrices[item.symbol];
             if (!mintPrice && item.symbol === 'csoFTT') {
                 mintPrice = coingeckoPrices['cFTT'];
             }
             if (!mintPrice && item.symbol === 'cmSOL') {
                 const mintPriceInfo = await getPrice('mSOL');
+                console.log(mintPriceInfo);
                 if (mintPriceInfo?.price) {
-                    mintPrice = mintPriceInfo.price;
+                    mintPrice = Number(mintPriceInfo.price);
                 }
             }
-            console.log(item.symbol, mintPrice);
+            console.log(item.symbol, item.price, mintPrice);
             if (mintPrice) {
                 item.price = Number((item.price * mintPrice).toFixed(6));
             } else {
                 item.price = 0;
             }
             item.coingecko = undefined;
-        });
+        };
 
         const filterPrices = cTokenResult.filter(x => x.price !== 0);
         const cTokensJson = formatJsonOutput ? JSON.stringify(filterPrices, null, 4) : JSON.stringify(filterPrices);
