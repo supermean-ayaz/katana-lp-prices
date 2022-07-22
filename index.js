@@ -113,7 +113,8 @@ const { getPrice, getPrices } = require('./src/utils');
             item.coingecko = undefined;
         });
 
-        const cTokensJson = formatJsonOutput ? JSON.stringify(cTokenResult, null, 4) : JSON.stringify(cTokenResult);
+        const filterPrices = cTokenResult.filter(x => x.price !== 0);
+        const cTokensJson = formatJsonOutput ? JSON.stringify(filterPrices, null, 4) : JSON.stringify(filterPrices);
         fs.writeFileSync(`./ctokens-usdc.json`, cTokensJson, fileEncoding);
 
         console.timeEnd("ctoken");
