@@ -8,7 +8,7 @@ const { getPrice, getPrices } = require('./src/utils');
 (async () => {
     const fileEncoding = { encoding: 'utf8' };
     const formatJsonOutput = process.env.FORMAT_JSON || false;
-    
+    /*
     try {
         console.time("getCoveredCallPrice");
         const fileName = "katana-cover-all";
@@ -80,7 +80,7 @@ const { getPrice, getPrices } = require('./src/utils');
     } catch (error) {
         console.error('AllBridge:ERROR:', error);
     }
-
+*/
     try {
         console.time("ctoken");
         //All Bridge LP
@@ -90,10 +90,22 @@ const { getPrice, getPrices } = require('./src/utils');
         const cTokenResult = await cTokens.getPriceList();
 
         //Get prices from coingecko
-        const coingeckoIds = Object.assign({}, ...cTokenResult.filter(x => x.coingecko && x.coingecko.length > 0).map((x) => ({ [x.coingecko]: x.address })));
+        const coingeckoIds = Object.assign({}, ...cTokenResult.filter(x => x.coingecko).map((x) => ({ [x.coingecko]: x.symbol })));
+        console.log(coingeckoIds);
         const coingeckoPrices = await getPrices(coingeckoIds);
-        cTokenResult.forEach(item => {
-            const mintPrice = coingeckoPrices[item.address];
+        console.log(coingeckoPrices);
+        cTokenResult.forEach(async (item) => {
+            let mintPrice = coingeckoPrices[item.symbol];
+            if (!mintPrice && item.symbol === 'csoFTT') {
+                mintPrice = coingeckoPrices['cFTT'];
+            }
+            if (!mintPrice && item.symbol === 'cmSOL') {
+                const mintPriceInfo = await getPrice('mSOL');
+                if (mintPriceInfo?.price) {
+                    mintPrice = mintPriceInfo.price;
+                }
+            }
+            console.log(item.symbol, mintPrice);
             if (mintPrice) {
                 item.price = Number((item.price * mintPrice).toFixed(6));
             } else {

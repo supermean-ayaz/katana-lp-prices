@@ -48,7 +48,9 @@ const getPriceFromJup = async (tokenAddress) => {
  * @returns 
  */
 const getPricesFromCoingecko = async (ids = {}) => {
-    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${Object.keys(ids).join(',')}&vs_currencies=usd`, {
+    const reqUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${Object.keys(ids).join(',')}&vs_currencies=usd`;
+    console.log(reqUrl);
+    const res = await fetch(reqUrl, {
         method: "GET",
         headers: {
             "Accept": "application/json",
@@ -56,10 +58,11 @@ const getPricesFromCoingecko = async (ids = {}) => {
         }
     });
     const data = await res.json();
+    console.log(data);
     const list = Object.keys(data).map(x => {
         return {
-            id: ids[x],
-            price: data[x].usd
+            id: String(ids[x]),
+            price: Number(data[x].usd)
         }
     });
     //retun as dictionary
